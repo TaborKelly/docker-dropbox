@@ -1,9 +1,3 @@
-#!/bin/bash
+#!/bin/bash -xe
 
-# grab global variables
-source vars
-
-DOCKER=$(which docker)
-
-# build image
-$DOCKER build --pull --no-cache --tag ${IMAGE_NAME} .
+docker build --tag docker-dropbox .

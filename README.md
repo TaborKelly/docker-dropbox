@@ -1,75 +1,57 @@
-About this container
----
-[![Docker Build Status](https://img.shields.io/docker/build/cturra/dropbox.svg)](https://hub.docker.com/r/cturra/dropbox/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/cturra/dropbox.svg)](https://hub.docker.com/r/cturra/dropbox/)
-[![Apache licensed](https://img.shields.io/badge/license-Apache-blue.svg)](https://raw.githubusercontent.com/cturra/docker-dropbox/badges/LICENSE)
+# docker-dropbox
+## Introduction
+A container for [Dropbox](https://www.dropbox.com/). Based on work by [cturra](https://github.com/cturra/docker-dropbox) and [janeczku](https://github.com/janeczku/docker-dropbox). Image based on Ubuntu 18.04.
 
-This container runs the Dropbox Linux client. More about Dropbox can be found at:
-
-  https://www.dropbox.com
-
-
-Running from Docker Hub
----
-Pull and run -- it's this simple.
-
+## Building
+This will build an image named `docker-dropbox`:
 ```
-# pull from docker hub
-$> docker pull cturra/dropbox
-
-# run docker
-$> docker run --name=dropbox                     \
-              --restart=always                   \
-              --detach=true                      \
-              --memory=512m                      \
-              --net=host                         \
-              --volume=/data/dropbox:/dropbox:rw \
-              cturra/dropbox
+./build.sh
 ```
 
-
-Building and Running with Docker engine
----
-Using the `vars` file in this git repo, you can update any of the variables to
-reflect your environment. Once updated, simply execute the `build` then `run` scripts.
-
+## Running
+### On the host
+First, create a user and group for `dropbox` and add yourself to the `dropbox` group. Hopefully, UID/GID 500 is free on your system. If not you can pick a different number and modify the UID/GID in the Dockerfile.
 ```
-# build docker
-$> ./build.sh
-
-# run docker
-$> ./run.sh
+$ sudo groupadd -g 500 dropbox
+$ sudo useradd -M -s /sbin/nologin -u 500 -g 500 dropbox
+$ sudo usermod -a -G dropbox $USER
 ```
 
+**Don't forget to logout and back it to get your new `dropbox` group permissions.**
 
-Help
----
-The first time you run this, you'll need to link the container to your dropbox
-account. If you check out the supervisor logs, located within your volume mount
-(from the example above that would be `/data/dropbox/logs/`) you should see a
-message like:
-
+Now, create a directory that is owned by the `dropbox` user/group:
 ```
+sudo mkdir /some/path/for/dropbox
+sudo chown dropbox:dropbox /some/path/for/dropbox
+```
+
+### Running the container
+This will start the the image, name the container `dropbox`, and limit it to 512MB or RAM.
+```
+./run.sh /some/path/for/dropbox
+```
+
+Next, check the logs to link the computer with your dropbox account.
+```
+$ docker logs dropbox
+...
+2019-02-17 03:44:55,186 DEBG 'dropbox' stdout output:
 This computer isn't linked to any Dropbox account...
-Please visit https://www.dropbox.com/cli_link_nonce?nonce=90084227dc5340d88136f436c5be18fb
-to link this device.
+2019-02-17 03:44:55,186 DEBG 'dropbox' stdout output:
+
+
+2019-02-17 03:44:55,431 DEBG 'dropbox' stdout output:
+Please visit https://www.dropbox.com/cli_link_nonce?nonce=SOMELONGNONCE to link this device.
 ```
 
-Simply copy that link into your browser and complete the linking process. After
-you've done this the first time, subsequent runs shouldn't prompt you for this.
-
-Note that the container expects /dropbox to look like this:
-
+### Fixing file permissions
+The docker container is configured to create most files readable and writable by anyone in the `dropbox` group. However, Dropbox sets more restrictive permissions for the directory that it syncs into, so just once you will need to fix them:
 ```
-├── dropbox
-│   ├── Dropbox [ If you have a pre-existing Dropbox directory, you can move it here. ]
-│   └── logs
-│       └── supervisor
+sudo chmod g+rw /some/path/to/dropbox/Dropbox
 ```
 
-You can use the following command as an example to create this structure:
-
+### Poking around the container
+If for some reason you need to poke around the container you can do that the normal Docker way:
 ```
-mkdir -p /data/dropbox/Dropbox
-mkdir -p /data/dropbox/logs/supervisor
+docker exec -it dropbox /bin/bash
 ```
