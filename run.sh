@@ -12,6 +12,7 @@ MEMORY_LIMIT=512m
 docker run --name=dropbox \
            --detach=true \
            --restart=always \
+           --cpus="1.0" \
            --memory=${MEMORY_LIMIT} \
-           --mount type=bind,source=$1,target=/dropbox \
+           --mount type=bind,source=$1,target=/home/dropbox/Dropbox \
            docker-dropbox
