@@ -7,7 +7,6 @@ DROPBOX_DIR=/home/dropbox/Dropbox
 # Run five minutes after the top of very hour
 # minute, hour, day of month, month, day of week
 5 * * * * root chown dropbox:dropbox -R $DROPBOX_DIR
-5 * * * * root chmod ug+x $DROPBOX_DIR
-5 * * * * root chmod ug+rw -R $DROPBOX_DIR
-5 * * * * root chmod o-rwx -R $DROPBOX_DIR
+5 * * * * root chmod ug+rwX -R $DROPBOX_DIR
+5 * * * * root chmod o-rwx  -R $DROPBOX_DIR
 # This empty line is important. Do not remove it.
