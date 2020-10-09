@@ -9,6 +9,9 @@ fi
 
 MEMORY_LIMIT=512m
 
+docker stop dropbox || true
+docker rm dropbox || true
+
 docker run --name=dropbox \
            --detach=true \
            --restart=always \

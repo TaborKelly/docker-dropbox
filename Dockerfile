@@ -5,13 +5,22 @@ ARG DROPBOX_UID=500
 ARG DROPBOX_HOME_DIR=/home/dropbox
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV DROPBOX_VERSION 66.4.84
-ENV ARCH            86_64
 
 # Install prereqs
 RUN apt-get -q update               && \
-    apt-get -y install cron \
+    apt-get -y install cron            \
+                       libxdamage1     \
+                       libxext6        \
+                       libglapi-mesa   \
                        libglib2.0-0    \
+                       libxcb-dri2-0   \
+                       libxcb-dri3-0   \
+                       libxcb-glx0     \
+                       libxcb-present0 \
+                       libxcb-sync1    \
+                       libxfixes3      \
+                       libxshmfence1   \
+                       libxxf86vm1     \
                        supervisor      \
                        wget         && \
     rm -rf /var/lib/apt/lists/*
@@ -25,7 +34,7 @@ RUN groupadd -g 500 dropbox && \
 # - https://www.dropbox.com/install?os=lnx
 USER dropbox
 RUN wget -O /tmp/dropbox.tgz            \
-         -q https://clientupdates.dropboxstatic.com/dbx-releng/client/dropbox-lnx.x${ARCH}-${DROPBOX_VERSION}.tar.gz  && \
+         -q https://www.dropbox.com/download?plat=lnx.x86_64 && \
     tar -zxf /tmp/dropbox.tgz -C $DROPBOX_HOME_DIR && \
     rm -f /tmp/dropbox.tgz
 

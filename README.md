@@ -55,3 +55,6 @@ If for some reason you need to poke around the container you can do that the nor
 ```
 docker exec -it dropbox /bin/bash
 ```
+
+### Further reading
+https://www.dropbox.com/install-linux
